@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script>
+
+		var host = localStorage["host"] || "localhost"; // "http://192.168.218.109:22111";
+		var port = 22111;
+		var baseUrl = "http://" + host + ":" + port;
+
+		var tabs = {};
+
+		chrome.windows.getAll({populate: true}, function (windows) {
+			windows.forEach(function (window) {
+				window.tabs.forEach(function (tab) {
+					tabs[tab.id] = {
+						windowId: tab.windowId,
+						index: tab.index,
+						title: tab.title,
+						url: tab.url,
+						favIconUrl: tab.favIconUrl
+					};
+				});
+			});
+
+			xhr("POST", "/tabs/", tabs);
+		});
+
+		chrome.tabs.onCreated.addListener(function (tab) {
+			tabs[tab.id] = {
+				windowId: tab.windowId,
+				index: tab.index,
+				title: tab.title,
+				url: tab.url,
+				favIconUrl: tab.favIconUrl
+			};
+
+			xhr("POST", "/tab/" + tab.id, tabs[tab.id]);
+		});
+
+		chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+			if (!(changeInfo.windowId || changeInfo.index || changeInfo.title || changeInfo.url)) return;
+
+			tabs[tabId] = {
+				windowId: tab.windowId,
+				index: tab.index,
+				title: tab.title,
+				url: tab.url,
+				favIconUrl: tab.favIconUrl
+			};
+
+			xhr("PUT", "/tab/" + tabId, tabs[tabId]);
+		});
+
+		chrome.tabs.onRemoved.addListener(function (tabId, removeInfo) {
+			delete tabs[tabId];
+			xhr("DELETE", "/tab/" + tabId);
+		});
+
+		chrome.tabs.onAttached.addListener(function (tabId, attachInfo) {
+			var tab = tabs[tabId];
+			tab.windowId = attachInfo.newWindowId;
+			tab.index = attachInfo.newPosition;
+
+			xhr("PUT", "/tab/" + tabId, tabs[tabId]);
+		});
+
+		chrome.tabs.onMoved.addListener(function (tabId, moveInfo) {
+			var tab = tabs[tabId];
+			tab.index = moveInfo.toIndex;
+
+			xhr("PUT", "/tab/" + tabId, tabs[tabId]);
+		});
+
+		var xhr = function (method, relUrl, data, cb) {
+			if (data && typeof data == "function") {
+				cb = data;
+				data = null;
+			}
+
+			var req = new XMLHttpRequest();
+			req.open(method, baseUrl + relUrl, true);
+
+			if (data) {
+				req.setRequestHeader("Content-Type", "application/json");
+				req.send(JSON.stringify(data));
+			} else {
+				req.send(null);
+			}
+
+			req.onreadystatechange = function () {
+				if (req.readyState === 4) {
+					cb && cb(JSON.parse(req.responseText));
+				}
+			};
+		};
+	</script>
+</head>
+</html>

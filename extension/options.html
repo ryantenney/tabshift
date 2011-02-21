@@ -1,0 +1,23 @@
+<html>
+<head>
+	<title>Tab Synch Extension Options</title>
+	<script type="text/javascript">
+		function save_options() {
+			localStorage["host"] = document.getElementById("host").value;
+		}
+
+		function restore_options() {
+			document.getElementById("host").value = localStorage["host"] || "localhost";
+		}
+
+	</script>
+</head>
+<body onload="restore_options()">
+	Host:
+	<input id="host" type="text">
+
+	<br>
+	<button onclick="save_options()">Save</button>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+	"name": "Tab Synch Extension",
+	"version": "0.1",
+	"description": "",
+	"icons" : {},
+	"background_page": "background.html",
+	"options_page": "options.html",
+	"permissions": [
+		"tabs",
+		"http://*/"
+	]
+}
