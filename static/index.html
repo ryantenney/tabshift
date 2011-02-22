@@ -1,0 +1,39 @@
+<html>
+	<head>
+		<title>Tab Sync</title>
+		<script type="application/javascript" src="/js/jquery.min.js"></script>
+		<script type="application/javascript" src="/js/jquery.tmpl.min.js"></script>
+		<script type="application/javascript">
+			$(function () {
+
+				var tabs = [];
+				var $ul = $("ul");
+				var li_template = $("#li_template").template();
+
+				$.get("/tabs/", function (tabObj) {
+					for (var tabId in tabObj) {
+						tabs.push(tabObj[tabId]);
+					}
+
+					tabs.sort(function (a, b) {
+						return a.windowId != b.windowId ? a.windowId - b.windowId : a.index - b.index;
+					});
+
+					$.each(tabs, function () {
+						$ul.append($.tmpl(li_template, this));
+					});
+				});
+
+			});
+		</script>
+		<script id="li_template" type="text/x-jquery-tmpl">
+			<li>
+				<img src="${favIconUrl}" width="16" height="16" />
+				<a href="${url}" target="_blank">${title}</a>
+			</li>
+		</script>
+	</head>
+	<body>
+		<ul />
+	</body>
+</html>
