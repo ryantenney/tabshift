@@ -6,8 +6,8 @@ var app = express.createServer();
 
 
 app.configure(function () {
-    app.use(express.staticProvider(__dirname + "/static"));
-    app.use(express.bodyDecoder());
+    app.use(express.static(__dirname + "/static"));
+    app.use(express.bodyParser());
     app.use(express.methodOverride());
 });
 
