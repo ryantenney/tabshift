@@ -4,25 +4,7 @@
 		<script type="application/javascript" src="/js/jquery.min.js"></script>
 		<script type="application/javascript" src="/js/jquery.tmpl.min.js"></script>
 		<script type="application/javascript" src="/js/underscore-min.js"></script>
-		<script type="application/javascript">
-			$(function () {
-
-				var $ul = $("ul");
-				var li_template = $("#li_template").template();
-
-				$.get("/tabs/", function (tabs) {
-					_(tabs)
-						.values()
-						.sort(function (a, b) {
-							return a.windowId != b.windowId ? a.windowId - b.windowId : a.index - b.index;
-						})
-						.forEach(function (tab) {
-							$ul.append($.tmpl(li_template, tab));
-						});
-				});
-
-			});
-		</script>
+		<script type="application/javascript" src="/js/tabshift.js"></script>
 		<script id="li_template" type="text/x-jquery-tmpl">
 			<li>
 				<img src="${favIconUrl}" width="16" height="16" />
