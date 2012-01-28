@@ -1,53 +1,88 @@
 #!/usr/bin/env node
 
+var argv = process.argv,
 
-var express = require("express");
-var app = express.createServer();
+	util = require("util"),
 
-
-app.configure(function () {
-    app.use(express.staticProvider(__dirname + "/static"));
-    app.use(express.bodyDecoder());
-    app.use(express.methodOverride());
-});
+	daemon = require("daemon"),
+	express = require("express"),
+	app = express.createServer();
 
 
-var tabs = {};
+var daemonConfig = {
+	lockFile: "/tmp/tabshift-server.pid",
+	logFile: "tabshift-server.log"
+};
 
 
-app.get("/tabs/", function (req, res) {
-    res.send(tabs);
-});
+switch (argv[2]) {
 
-app.post("/tabs/", function (req, res) {
-    tabs = req.body;
-    res.end();
-});
+	case "start":
+		daemon.daemonize(daemonConfig.logFile, daemonConfig.lockFile, start);
+		break;
 
+	case "stop":
+		daemon.stop(daemonConfig.lockFile, function (err, pid) {
+			if (err) return util.puts("Error stopping daemon: " + err);
+			util.puts("Successfully stopped daemon with pid: " + pid);
+		});
+		break;
 
-app.get("/tab/:id", function (req, res) {
-    var id = req.params.id;
-    if (tabs[id]) {
-        res.send(tabs[id]);
-    } else {
-        res.writeHead(404);
-    }
-});
+	default:
+		util.puts('Usage: [start|stop]');
+		process.exit(-1);
+		break;
 
-app.post("/tab/:id", function (req, res) {
-    tabs[req.params.id] = req.body;
-    res.end();
-});
-
-app.put("/tab/:id", function (req, res) {
-    tabs[req.params.id] = req.body;
-    res.end();
-});
-
-app.del("/tab/:id", function (req, res) {
-    delete tabs[req.params.id];
-    res.end();
-});
+}
 
 
-app.listen(22111);
+function start(err, pid) {
+
+	app.configure(function () {
+		app.use(express.static(__dirname + "/static"));
+		app.use(express.bodyParser());
+		app.use(express.methodOverride());
+	});
+
+
+	var tabs = {};
+
+
+	app.get("/tabs/", function (req, res) {
+		res.send(tabs);
+	});
+
+	app.post("/tabs/", function (req, res) {
+		tabs = req.body;
+		res.end();
+	});
+
+
+	app.get("/tab/:id", function (req, res) {
+		var id = req.params.id;
+		if (tabs[id]) {
+			res.send(tabs[id]);
+		} else {
+			res.writeHead(404);
+		}
+	});
+
+	app.post("/tab/:id", function (req, res) {
+		tabs[req.params.id] = req.body;
+		res.end();
+	});
+
+	app.put("/tab/:id", function (req, res) {
+		tabs[req.params.id] = req.body;
+		res.end();
+	});
+
+	app.del("/tab/:id", function (req, res) {
+		delete tabs[req.params.id];
+		res.end();
+	});
+
+
+	app.listen(22111);
+
+}
