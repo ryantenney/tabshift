@@ -2,7 +2,6 @@
 	<head>
 		<title>Tab Shift</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<link rel="apple-touch-icon" href="/img/Google-Chrome-Canary-icon.png"/>
 		<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.css" />
 		<script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
@@ -10,31 +9,6 @@
 		<script src="/js/jquery.tmpl.min.js"></script>
 		<script src="/js/underscore-min.js"></script>
 		<script>
-			$(function () {
-
-				var $ul = $("ul");
-				var $count = $("#itemCount");
-				var li_template = $("#li_template").template();
-
-				$("#btnRefresh").click(loadTabs);
-
-				loadTabs();
-
-				function loadTabs() {
-					$.mobile.showPageLoadingMsg();
-					return $.get("/tabs/").then(function (data) {
-						var tabs = _(data).values().sort(tabOrderComparator);
-						$.tmpl(li_template, tabs).appendTo($ul.empty());
-						$ul.listview("refresh");
-						$count.text(tabs.length);
-						$.mobile.hidePageLoadingMsg();
-					});
-				}
-
-				function tabOrderComparator(a, b) {
-					return a.windowId != b.windowId ? a.windowId - b.windowId : a.index - b.index;
-				}
-			});
 		</script>
 		<script id="li_template" type="text/x-jquery-tmpl">
 			<li>

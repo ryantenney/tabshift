@@ -1,0 +1,28 @@
+{
+	"name": "tabshift",
+	"description": "Chrome Extension, Server and HTML Client for easily accessing your open tabs in Chrome from another device.",
+	"author": "Ryan W Tenney <ryan@10e.us>",
+	"homepage": "http://ryantenney.github.com/tabshift/",
+	"version": "0.2.1",
+	"main": "server.js",
+	"bin": {
+		"tabshift": "./server.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "http://ryantenney.github.com/ryantenney/tabshift/"
+	},
+	"dependencies": {
+		"express": "2.5.6",
+		"express": ">=0.4.0"
+	},
+	"engines": {
+		"node": "0.6"
+	},
+	"licenses": [
+		{
+			"type": "MIT",
+			"url" : "http://github.com/ryantenney/tabshift/raw/master/LICENSE"
+		}
+	]
+}
